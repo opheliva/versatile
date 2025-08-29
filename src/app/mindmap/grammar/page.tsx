@@ -11,8 +11,9 @@ interface NodeData {
 }
 
 // Mở rộng kiểu dữ liệu D3 HierarchyNode để bao gồm các thuộc tính cho hoạt ảnh
+// Thêm thuộc tính id: string, x0 và y0
 interface HierarchyPointNodeWithId extends d3.HierarchyPointNode<NodeData> {
-  id?: number | string;
+  id?: string;
   x0?: number;
   y0?: number;
 }
@@ -116,13 +117,14 @@ const D3Mindmap: React.FC = () => {
       .append("g")
       .attr("transform", `translate(${margin.left},${rootY})`);
 
-    // Tạo cấu trúc phân cấp cho D3
+    // Tạo cấu trúc phân cấp cho D3 và ép kiểu sang HierarchyPointNodeWithId
     const root = d3.hierarchy<NodeData>(data, (d) => d.children) as HierarchyPointNodeWithId;
 
     // Gán một ID duy nhất cho mỗi node ngay từ đầu
     let idCounter = 0;
-    root.each(node => {
-        (node as HierarchyPointNodeWithId).id = ++idCounter;
+    root.each((node) => {
+        // Chuyển đổi số thành chuỗi để gán vào thuộc tính id
+        (node as HierarchyPointNodeWithId).id = `node-${++idCounter}`;
     });
 
     // Khởi tạo vị trí gốc
@@ -200,7 +202,7 @@ const D3Mindmap: React.FC = () => {
       // Tạo layout cây và lấy các node, link
       const treeData = d3.tree<NodeData>().size([height, width])(root);
       const nodes = treeData.descendants().reverse() as HierarchyPointNodeWithId[];
-      const links = root.links(); // Đây là cách đúng để lấy link từ cây
+      const links = root.links(); // Lấy link từ cấu trúc cây
 
       // Cập nhật vị trí y của các node
       nodes.forEach((d) => {
@@ -209,7 +211,8 @@ const D3Mindmap: React.FC = () => {
 
       // Cập nhật các node
       const node = svg.selectAll<SVGGElement, HierarchyPointNodeWithId>("g.node")
-        .data(nodes, (d) => d.id as number);
+        // Đảm bảo id được truyền vào là kiểu string
+        .data(nodes, (d) => d.id as string);
 
       // Thêm các node mới vào sơ đồ
       const nodeEnter = node
@@ -265,7 +268,8 @@ const D3Mindmap: React.FC = () => {
 
       // Cập nhật các đường liên kết
       const link = svg.selectAll<SVGPathElement, d3.HierarchyPointLink<NodeData>>("path.link")
-        .data(links, (d) => (d.target as HierarchyPointNodeWithId).id as number);
+        // Đảm bảo id được truyền vào là kiểu string
+        .data(links, (d) => (d.target as HierarchyPointNodeWithId).id as string);
 
       // Thêm các link mới
       link
