@@ -5,9 +5,23 @@ import Link from "next/link";
 import { useUser, useClerk } from "@clerk/nextjs";
 
 export default function Header() {
-  const [showMenu, setShowMenu] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showMindmapMenu, setShowMindmapMenu] = useState(false);
   const { isLoaded, isSignedIn, user } = useUser();
   const { signOut } = useClerk();
+
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = "/sign-in";
+  };
+
+  const toggleUserMenu = () => {
+    setShowUserMenu(!showUserMenu);
+  };
+
+  const toggleMindmapMenu = () => {
+    setShowMindmapMenu(!showMindmapMenu);
+  };
 
   return (
     <header className="bg-[#fdfcf6] px-5 pt-1 pb-0">
@@ -21,7 +35,7 @@ export default function Header() {
             height={200}
             priority
           />
-          <span className="text-4xl font-bold text-[#505252]">
+          <span className="text-4xl font-bold text-[#7ed957]">
             Learn English In The Versatile Way
           </span>
         </div>
@@ -38,18 +52,41 @@ export default function Header() {
           </Link>
         ) : (
           <div className="flex items-center gap-2 relative">
-            <Image
-              src="/bunny-ears.png"
-              alt="Bunny ears"
-              width={50}
-              height={50}
-              className="absolute -top-6 -right-2"
-            />
+            {/* User Info (Carrot & Streak) */}
+            <div className="flex items-center gap-2 mr-4">
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/carrot.png"
+                  alt="Carrot icon"
+                  width={50}
+                  height={50}
+                />
+                <span className="text-[#505252] font-bold text-lg">3</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/treak.png"
+                  alt="Streak icon"
+                  width={50}
+                  height={50}
+                />
+                <span className="text-[#505252] font-bold text-lg">3</span>
+              </div>
+            </div>
+            
+            {/* The main button that shows/hides the dropdown */}
             <button
+              onClick={toggleUserMenu}
               className="flex items-center gap-2 border border-[#cfd1ce] rounded-md px-5 py-2 bg-transparent text-[#a3a3a3] font-semibold text-xl hover:bg-[#f3f3f3]"
-              onMouseEnter={() => setShowMenu(true)}
-              onMouseLeave={() => setShowMenu(false)}
             >
+              {/* Bluebird is now part of the button and absolutely positioned */}
+              <Image
+                src="/bluebird.gif"
+                alt="Bluebird"
+                width={100}
+                height={100}
+                className="absolute -top-13 left-1/2 -translate-x-1/2 z-20"
+              />
               <Image
                 src={user.imageUrl}
                 alt="User avatar"
@@ -61,25 +98,25 @@ export default function Header() {
                 {user.firstName ? user.firstName.toUpperCase() : "PROFILE"}
               </span>
             </button>
-            {showMenu && (
+            
+            {/* User dropdown menu */}
+            {showUserMenu && (
               <div
-                className="absolute right-0 top-full mt-3 bg-white shadow-lg rounded-md py-2 px-6 flex flex-col min-w-[220px] z-10"
-                onMouseEnter={() => setShowMenu(true)}
-                onMouseLeave={() => setShowMenu(false)}
+                className="absolute right-0 top-full mt-3 bg-white shadow-lg rounded-md py-2 px-6 flex flex-col min-w-[220px] z-30"
               >
                 <Link href="/my-profile" className="flex items-center gap-2 text-[#505252] font-semibold py-2 hover:bg-gray-100 rounded">
-                  <Image src="/profile-icon.png" alt="Profile icon" width={20} height={20} />
+                  <Image src="/profile-icon.png" alt="Profile icon" width={30} height={30} />
                   My profile
                 </Link>
                 <Link href="/carrot-shop" className="flex items-center gap-2 text-[#505252] font-semibold py-2 hover:bg-gray-100 rounded">
-                  <Image src="/carrot-icon.png" alt="Carrot icon" width={20} height={20} />
+                  <Image src="/carrot-icon.png" alt="Carrot icon" width={30} height={30} />
                   Carrot shop
                 </Link>
                 <button
-                  onClick={() => signOut()}
+                  onClick={handleSignOut}
                   className="flex items-center gap-2 text-[#505252] font-semibold py-2 hover:bg-gray-100 rounded text-left w-full"
                 >
-                  <Image src="/logout-icon.png" alt="Logout icon" width={20} height={20} />
+                  <Image src="/logout-icon.png" alt="Logout icon" width={30} height={30} />
                   Log out
                 </button>
               </div>
@@ -93,15 +130,30 @@ export default function Header() {
           <Image
             src="/home.png"
             alt="Home icon"
-            width={35}
-            height={35}
+            width={50}
+            height={50}
             priority
           />
           HOME
         </Link>
-        <Link href="/mindmap" className="text-white font-bold text-2xl tracking-wide">
-          MINDMAP
-        </Link>
+        <div className="relative">
+          <button
+            onClick={toggleMindmapMenu}
+            className="text-white font-bold text-2xl tracking-wide"
+          >
+            MINDMAP
+          </button>
+          {showMindmapMenu && (
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white shadow-lg rounded-md py-2 px-4 flex flex-col min-w-[220px] z-10">
+              <Link href="/mindmap/grammar" className="text-[#505252] font-semibold py-2 hover:bg-gray-100 rounded">
+                Grammar mindmap
+              </Link>
+              <Link href="/mindmap/vocabulary" className="text-[#505252] font-semibold py-2 hover:bg-gray-100 rounded">
+                Vocabulary mindmap
+              </Link>
+            </div>
+          )}
+        </div>
         <Link href="/ai-tutor" className="text-white font-bold text-2xl tracking-wide">
           AI TUTOR
         </Link>

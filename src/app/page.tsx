@@ -1,66 +1,45 @@
-// app/page.tsx
 "use client";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
-export default function HomePage() {
+export default function Home() {
+  const { isSignedIn } = useUser();
+
   return (
-    <main className="flex flex-col items-center justify-center bg-[#fdfcf6]">
-      {/* --- Phần 1: Giới thiệu chính --- */}
-      <section className="flex flex-col items-center justify-center w-full min-h-screen">
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="text-center p-8 max-w-4xl"
-        >
-          <h1 className="text-6xl font-extrabold text-[#505252] mb-4">
-            Học ngoại ngữ miễn phí, vui nhộn và hiệu quả!
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Versatile sẽ giúp bạn chinh phục tiếng Anh một cách dễ dàng.
-          </p>
-
-          {/* Các nút */}
-          <div className="flex justify-center gap-6 mt-6">
-            <Link href="/practice">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-green-500 text-white font-bold py-4 px-10 rounded-full shadow-lg hover:bg-green-600 transition-colors"
-              >
-                BẮT ĐẦU
-              </motion.button>
-            </Link>
-            <Link href="/login">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white text-green-500 font-bold py-4 px-10 rounded-full shadow-lg border-2 border-green-500 hover:bg-gray-100 transition-colors"
-              >
-                TÔI ĐÃ CÓ TÀI KHOẢN
-              </motion.button>
+    <main>
+      {/* --- Phần 1: Giới thiệu chung --- */}
+      <section className="relative w-full h-screen flex items-center justify-center p-8 bg-[#fffdfc]">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
+          {/* Nội dung bên trái */}
+          <div className="md:w-1/2 text-left mb-10 md:mb-0">
+            <h1 className="text-6xl font-extrabold text-[#505252] mb-4 leading-tight">
+              LEARN ENGLISH AS A FUN GAME
+            </h1>
+            <p className="text-3xl text-[#7ed957] font-semibold mb-8">
+              ENJOYABLE, MEMORABLE AND EFFECTIVE
+            </p>
+            <Link
+              href={isSignedIn ? "/practice" : "/sign-in"}
+              className="bg-[#ff6957] text-white font-bold py-4 px-10 rounded-full text-2xl shadow-lg hover:bg-[#ff4e3e] transition duration-300 transform hover:scale-105 inline-block"
+            >
+              Get started
+              <span className="ml-2">🚀</span>
             </Link>
           </div>
-        </motion.div>
 
-        {/* Thêm video */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5, delay: 0.5 }}
-          className="mt-10 max-w-xl mx-auto"
-        >
-          <video
-            src="/rabbit.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-auto rounded-lg shadow-xl"
-          />
-        </motion.div>
+          {/* Video và các tính năng bên phải */}
+          <div className="md:w-1/2 flex flex-col items-center">
+            {/* Video */}
+            <video
+              src="/rabbit.mp4"
+              autoPlay
+              muted
+              loop
+              className="w-full max-w-lg mb-8 rounded-none border-0"
+            />
+          </div>
+        </div>
       </section>
 
       {/* --- Phần 2: Các tính năng nổi bật --- */}
@@ -94,8 +73,8 @@ export default function HomePage() {
 
       {/* --- Phần 3: Footer --- */}
       <footer className="w-full py-8 text-center text-gray-600">
-        <p>&copy; 2024 Versatile. All rights reserved.</p>
-        <p>Liên hệ: zhaoweipv@gmail.com</p>
+        <p>&copy; 2025 Versatile. All rights reserved.</p>
+        <p>Contact: zhaoweipv@gmail.com</p>
       </footer>
     </main>
   );
