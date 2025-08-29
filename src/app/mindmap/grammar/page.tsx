@@ -3,11 +3,18 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-// Define the data structure for the mindmap nodes
+// Định nghĩa kiểu dữ liệu cho mỗi node trong sơ đồ
 interface NodeData {
   name: string;
   children?: NodeData[] | null;
   _children?: NodeData[] | null;
+}
+
+// Mở rộng kiểu dữ liệu D3 HierarchyNode để bao gồm các thuộc tính cho hoạt ảnh
+interface HierarchyPointNodeWithId extends d3.HierarchyPointNode<NodeData> {
+  id?: number | string;
+  x0?: number;
+  y0?: number;
 }
 
 const data: NodeData = {
@@ -89,16 +96,16 @@ const D3Mindmap: React.FC = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
-    // Define sizes and margins
+    // Kích thước và lề của sơ đồ
     const margin = { top: 20, right: 120, bottom: 20, left: 120 };
     const width = 1600;
     const height = 3000;
     const duration = 750;
 
-    // Remove old SVG to prevent duplicates
+    // Xóa SVG cũ để vẽ lại
     d3.select(svgRef.current).select("svg").remove();
 
-    // Create main SVG and group element
+    // Tạo main SVG và nhóm (group)
     const rootY = 100;
     const svg = d3
       .select(svgRef.current)
@@ -109,33 +116,40 @@ const D3Mindmap: React.FC = () => {
       .append("g")
       .attr("transform", `translate(${margin.left},${rootY})`);
 
-    // Create D3 hierarchy from the data
-    let i = 0; // This variable must be `let` as it is incremented
-    const root = d3.hierarchy<NodeData>(data, (d) => d.children);
+    // Tạo cấu trúc phân cấp cho D3
+    const root = d3.hierarchy<NodeData>(data, (d) => d.children) as HierarchyPointNodeWithId;
+
+    // Gán một ID duy nhất cho mỗi node ngay từ đầu
+    let idCounter = 0;
+    root.each(node => {
+        (node as HierarchyPointNodeWithId).id = ++idCounter;
+    });
+
+    // Khởi tạo vị trí gốc
     root.x0 = 0;
     root.y0 = 0;
 
-    // Define colors for the nodes
+    // Định nghĩa các màu sắc cho node
     const colors = [
       "#e74c3c", "#f39c12", "#f1c40f", "#2ecc71", "#3498db",
       "#9b59b6", "#34495e", "#1abc9c", "#e67e22",
     ];
 
-    // Helper function to get color based on node depth
-    const getColor = (d: d3.HierarchyNode<NodeData>) => {
+    // Hàm lấy màu dựa trên độ sâu của node
+    const getColor = (d: HierarchyPointNodeWithId) => {
       if (d.depth === 0) return "#34495e";
       const firstLevelAncestor = d
         .ancestors()
         .find((ancestor) => ancestor.depth === 1);
       if (firstLevelAncestor) {
-        const index = root.children?.indexOf(firstLevelAncestor) ?? 0;
+        const index = root.children?.indexOf(firstLevelAncestor as any) ?? 0;
         return colors[index % colors.length];
       }
       return "#555";
     };
 
-    // Helper function to wrap text for multiline display
-    function wrapText(text: d3.Selection<SVGTextElement, d3.HierarchyNode<NodeData>, any, any>, width: number) {
+    // Hàm bao bọc văn bản để xuống dòng
+    function wrapText(text: d3.Selection<SVGTextElement, HierarchyPointNodeWithId, any, any>, width: number) {
       text.each(function () {
         const textEl = d3.select(this);
         const words = textEl.text().split(/\s+/).reverse();
@@ -169,8 +183,8 @@ const D3Mindmap: React.FC = () => {
       });
     }
 
-    // Click handler to expand/collapse nodes
-    const click = (_event: MouseEvent, d: d3.HierarchyNode<NodeData>) => {
+    // Hàm xử lý khi click vào node
+    const click = (_event: MouseEvent, d: HierarchyPointNodeWithId) => {
       if (d.children) {
         d._children = d.children;
         d.children = null;
@@ -181,28 +195,28 @@ const D3Mindmap: React.FC = () => {
       update(d);
     };
 
-    // Main update function for the mindmap
-    function update(source: d3.HierarchyNode<NodeData>) {
-      // Correctly generate the tree layout and link data
+    // Hàm cập nhật sơ đồ chính
+    function update(source: HierarchyPointNodeWithId) {
+      // Tạo layout cây và lấy các node, link
       const treeData = d3.tree<NodeData>().size([height, width])(root);
-      const nodes = treeData.descendants().reverse();
-      const links = root.links(); // This is the correct way to get links
+      const nodes = treeData.descendants().reverse() as HierarchyPointNodeWithId[];
+      const links = root.links(); // Đây là cách đúng để lấy link từ cây
 
-      // Set node positions
+      // Cập nhật vị trí y của các node
       nodes.forEach((d) => {
         d.y = d.depth * 250;
       });
 
-      // Update the nodes
-      const node = svg.selectAll<SVGGElement, d3.HierarchyNode<NodeData>>("g.node")
-        .data(nodes, (d) => d.id || (d.id = ++i));
+      // Cập nhật các node
+      const node = svg.selectAll<SVGGElement, HierarchyPointNodeWithId>("g.node")
+        .data(nodes, (d) => d.id as number);
 
-      // Enter any new nodes at the parent's previous position.
+      // Thêm các node mới vào sơ đồ
       const nodeEnter = node
         .enter()
         .append("g")
         .attr("class", "node")
-        .attr("transform", (d) => `translate(${source.y0},${source.x0})`)
+        .attr("transform", `translate(${source.y0},${source.x0})`)
         .on("click", click);
 
       nodeEnter
@@ -225,7 +239,7 @@ const D3Mindmap: React.FC = () => {
         .text((d) => d.data.name)
         .call(wrapText, 150);
 
-      // Merge new and old nodes
+      // Gộp các node mới và cũ
       const nodeUpdate = nodeEnter.merge(node);
 
       nodeUpdate
@@ -242,26 +256,27 @@ const D3Mindmap: React.FC = () => {
         .select("text")
         .style("fill", (d) => (d.depth === 0 ? "white" : "#333"));
 
-      // Transition exiting nodes to the parent's new position.
+      // Chuyển đổi và xóa các node không còn tồn tại
       node.exit()
         .transition()
         .duration(duration)
+        .attr("transform", (d) => `translate(${source.y},${source.x})`)
         .remove();
 
-      // Update the links
+      // Cập nhật các đường liên kết
       const link = svg.selectAll<SVGPathElement, d3.HierarchyPointLink<NodeData>>("path.link")
-        .data(links, (d) => d.target.id);
+        .data(links, (d) => (d.target as HierarchyPointNodeWithId).id as number);
 
-      // Enter any new links at the parent's previous position.
+      // Thêm các link mới
       link
         .enter()
         .insert("path", "g")
         .attr("class", "link")
         .attr("d", () => {
-          const o = { x: source.x0, y: source.y0 };
+          const o = { x: source.x0!, y: source.y0! };
           return d3.linkHorizontal<any, { x: number; y: number }>()({ source: o, target: o });
         })
-        .attr("stroke", (d) => getColor(d.target))
+        .attr("stroke", (d) => getColor(d.target as HierarchyPointNodeWithId))
         .attr("stroke-width", 2)
         .attr("fill", "none")
         .merge(link)
@@ -272,18 +287,23 @@ const D3Mindmap: React.FC = () => {
             .y(d => d.x)
         );
 
-      // Transition exiting links to the parent's new position.
-      link.exit().transition().duration(duration).remove();
+      // Chuyển đổi và xóa các link không còn tồn tại
+      link.exit().transition().duration(duration)
+        .attr("d", () => {
+            const o = { x: source.x, y: source.y };
+            return d3.linkHorizontal<any, { x: number; y: number }>()({ source: o, target: o });
+        })
+        .remove();
 
-      // Stash the old positions for transition.
+      // Lưu trữ vị trí hiện tại để chuẩn bị cho lần cập nhật tiếp theo
       root.eachBefore((d) => {
-        const node = d as any;
+        const node = d as HierarchyPointNodeWithId;
         node.x0 = node.x;
         node.y0 = node.y;
       });
     }
 
-    // Start rendering the mindmap from the root
+    // Bắt đầu vẽ sơ đồ từ gốc
     update(root);
   }, []);
 
