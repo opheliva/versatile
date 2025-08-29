@@ -11,11 +11,13 @@ interface NodeData {
 }
 
 // Mở rộng kiểu dữ liệu D3 HierarchyNode để bao gồm các thuộc tính cho hoạt ảnh
-// Thêm thuộc tính id: string, x0 và y0
+// Thêm thuộc tính id, x0 và y0 và _children
 interface HierarchyPointNodeWithId extends d3.HierarchyPointNode<NodeData> {
   id?: string;
   x0?: number;
   y0?: number;
+  // Khai báo rõ ràng thuộc tính _children
+  _children?: this["children"];
 }
 
 const data: NodeData = {
@@ -123,7 +125,6 @@ const D3Mindmap: React.FC = () => {
     // Gán một ID duy nhất cho mỗi node ngay từ đầu
     let idCounter = 0;
     root.each((node) => {
-        // Chuyển đổi số thành chuỗi để gán vào thuộc tính id
         (node as HierarchyPointNodeWithId).id = `node-${++idCounter}`;
     });
 
@@ -189,10 +190,10 @@ const D3Mindmap: React.FC = () => {
     const click = (_event: MouseEvent, d: HierarchyPointNodeWithId) => {
       if (d.children) {
         d._children = d.children;
-        d.children = null;
+        d.children = undefined; // Sử dụng undefined như bạn đã đề xuất
       } else {
         d.children = d._children;
-        d._children = null;
+        d._children = undefined; // Sử dụng undefined như bạn đã đề xuất
       }
       update(d);
     };
