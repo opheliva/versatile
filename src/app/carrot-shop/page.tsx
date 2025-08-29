@@ -20,7 +20,7 @@ const shopItems: ShopItem[] = [
 ];
 
 export default function CarrotShopPage() {
-  const { user, isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
   const [carrots, setCarrots] = useState<number>(250); // Initial carrots for demonstration
   const [message, setMessage] = useState<string>("");
 
@@ -32,6 +32,17 @@ export default function CarrotShopPage() {
       setMessage("Bạn không đủ cà rốt để mua món đồ này.");
     }
   };
+
+  if (!isSignedIn) {
+    return (
+      <main className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-3xl font-bold text-[#505252] mb-4">Carrot Shop</h1>
+        <p className="text-xl text-red-500">
+          Vui lòng đăng nhập để sử dụng Carrot Shop 🥕
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className="container mx-auto px-4 py-8">

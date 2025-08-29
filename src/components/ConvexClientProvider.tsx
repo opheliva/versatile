@@ -2,8 +2,9 @@
 
 import { ReactNode } from "react";
 import { ConvexReactClient } from "convex/react";
-import { ConvexProviderWithClerk } from "convex/react";
+import { ConvexProviderWithAuth } from "convex/react";
 import { useAuth } from "@clerk/nextjs";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
 
 // Khởi tạo Convex client với URL từ biến môi trường
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL as string);
