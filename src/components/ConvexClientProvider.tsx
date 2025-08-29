@@ -1,22 +1,18 @@
 "use client";
 
-import { ReactNode } from "react";
-import { ConvexReactClient } from "convex/react";
-import { ConvexProviderWithAuth } from "convex/react";
-import { useAuth } from "@clerk/nextjs";
+import { ClerkProvider, useAuth } from "@clerk/nextjs";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
+import React from "react";
 
-// Khởi tạo Convex client với URL từ biến môi trường
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL as string);
 
-export function ConvexClientProvider({ children }: { children: ReactNode }) {
+export default function ConvexClientProvider({ children }: { children: React.ReactNode }) {
   return (
-    // Sử dụng ConvexProviderWithClerk để kết nối Convex với Clerk.
-    // Component này đã tự động bao gồm chức năng của ClerkProvider.
-    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-      {children}
-    </ConvexProviderWithClerk>
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY as string}>
+      <ConvexProviderWithClerk useAuth={useAuth} client={convex}>
+        {children}
+      </ConvexProviderWithClerk>
+    </ClerkProvider>
   );
 }
-
-export default ConvexClientProvider;
