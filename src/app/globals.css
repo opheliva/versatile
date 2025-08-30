@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom class to ensure text gradients work across browsers */
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text; /* Required for Webkit browsers like Safari */
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
