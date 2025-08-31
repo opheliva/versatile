@@ -36,7 +36,7 @@ export default function Header() {
             priority
           />
           <span className="text-4xl font-bold text-[#7ed957]">
-            Learn English In The Versatile Way
+            Learn English In A Versatile Way
           </span>
         </div>
         {/* Login/Signup Button or User Profile */}
@@ -162,6 +162,9 @@ export default function Header() {
         </Link>
         <Link href="/community" className="text-white font-bold text-2xl tracking-wide">
           COMMUNITY
+        </Link>
+                <Link href="/community" className="text-white font-bold text-2xl tracking-wide">
+          ABOUT ME
         </Link>
       </nav>
     </header>

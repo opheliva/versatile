@@ -23,10 +23,12 @@ export default function CarrotShopPage() {
   const { isSignedIn } = useUser();
   const [carrots, setCarrots] = useState<number>(250); // Initial carrots for demonstration
   const [message, setMessage] = useState<string>("");
+  const [outfit, setOutfit] = useState<ShopItem[]>([]); // State mới để lưu các món đồ đã mua
 
   const handlePurchase = (item: ShopItem) => {
     if (carrots >= item.price) {
       setCarrots(carrots - item.price);
+      setOutfit((prevOutfit) => [...prevOutfit, item]);
       setMessage(`Bạn đã mua ${item.name} thành công!`);
     } else {
       setMessage("Bạn không đủ cà rốt để mua món đồ này.");
@@ -53,17 +55,44 @@ export default function CarrotShopPage() {
         </p>
       </div>
 
-      <div className="flex justify-between items-center bg-[#fdfcf6] p-4 rounded-md shadow-md mb-8">
-        <h2 className="text-3xl font-bold text-[#505252]">
-          Cà rốt của bạn: <span className="text-[#ff9900]">{carrots}</span>
-        </h2>
-        {message && (
-          <p className="text-xl font-medium text-center text-green-600">
-            {message}
-          </p>
-        )}
+      {/* Hiển thị con thỏ và trang phục */}
+      <div className="flex flex-col md:flex-row justify-center items-center gap-12 mb-12">
+        <div className="relative w-[300px] h-[300px] flex-shrink-0">
+          {/* Base bunny body */}
+          <Image
+            src="/bunny/base.png"
+            alt="Bunny"
+            layout="fill"
+            objectFit="contain"
+          />
+          {/* Quần áo overlay */}
+          {outfit.map((item) => (
+            <Image
+              key={item.id}
+              src={item.image}
+              alt={item.name}
+              layout="fill"
+              objectFit="contain"
+            />
+          ))}
+        </div>
+        
+        {/* Carrot count and message */}
+        <div className="flex flex-col items-center">
+          <div className="flex justify-between items-center bg-[#fdfcf6] p-4 rounded-md shadow-md mb-4 w-full">
+            <h2 className="text-3xl font-bold text-[#505252]">
+              Cà rốt của bạn: <span className="text-[#ff9900]">{carrots}</span>
+            </h2>
+          </div>
+          {message && (
+            <p className="text-xl font-medium text-center text-green-600">
+              {message}
+            </p>
+          )}
+        </div>
       </div>
 
+      {/* Grid danh sách sản phẩm */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {shopItems.map((item) => (
           <div
