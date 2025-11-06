@@ -12,6 +12,7 @@ export default function Header() {
 
   const handleSignOut = async () => {
     await signOut();
+    // Đảm bảo chuyển hướng sau khi đăng xuất
     window.location.href = "/sign-in";
   };
 
@@ -24,31 +25,43 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-[#fdfff2] px-5 pt-1 pb-0">
-      <div className="flex items-center justify-between">
+    <header className="bg-[#fdfff2] py-0">
+      <div className="flex items-center justify-between h-[150px] px-15">
         {/* Logo + Title */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-6">
           <Image
             src="/logo.png"
             alt="Versatile Logo"
-            width={200}
-            height={200}
+            width={150}
+            height={150}
             priority
           />
           <span className="text-4xl font-bold text-[#7e8b43]">
             Learn English In A Versatile Way
           </span>
         </div>
+        
         {/* Login/Signup Button or User Profile */}
         {!isLoaded || !isSignedIn ? (
-          <Link href="/sign-in" className="flex items-center gap-1 border border-[#cfd1ce] rounded-md px-5 py-2 bg-transparent text-[#a3a3a3] font-semibold text-xl hover:bg-[#f3f3f3]">
-            <Image
-              src="/user.png"
-              alt="User icon"
-              width={28}
-              height={28}
-            />
-            Log in / Sign up
+          <Link 
+            href="/sign-in" 
+            className="
+              relative 
+              flex items-center justify-center 
+              w-[240px] h-[230px]
+              mr-4
+              pl-10
+              text-[#7e8b43] font-bold text-lg 
+              bg-contain bg-center bg-no-repeat 
+              hover:opacity-90 transition-opacity
+              leading-none
+            "
+            style={{ 
+              backgroundImage: "url('/cta-background.png')",
+              fontFamily: 'var(--font-cta), sans-serif', 
+            }}
+          >
+            <span className="tracking-wide">Log in / Sign up</span> 
           </Link>
         ) : (
           <div className="flex items-center gap-2 relative">
@@ -125,7 +138,7 @@ export default function Header() {
         )}
       </div>
       {/* Navigation Bar */}
-      <nav className="mt-1 bg-[#505252] py-5 flex justify-center gap-25 relative">
+      <nav className="mt-0 bg-[#7e8b43] py-5 flex justify-center gap-25 relative">
         <Link href="/" className="flex items-center gap-0 text-white font-bold text-2xl tracking-wide">
           <Image
             src="/home.png"
