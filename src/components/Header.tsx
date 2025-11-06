@@ -24,7 +24,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-[#fdfcf6] px-5 pt-1 pb-0">
+    <header className="bg-[#fdfff2] px-5 pt-1 pb-0">
       <div className="flex items-center justify-between">
         {/* Logo + Title */}
         <div className="flex items-center gap-5">
@@ -35,7 +35,7 @@ export default function Header() {
             height={200}
             priority
           />
-          <span className="text-4xl font-bold text-[#7ed957]">
+          <span className="text-4xl font-bold text-[#7e8b43]">
             Learn English In A Versatile Way
           </span>
         </div>
