@@ -3,6 +3,9 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { useUser, useClerk } from "@clerk/nextjs";
+import { Archivo_Black } from "next/font/google";
+
+const archivoBlack = Archivo_Black({ subsets: ["latin"], weight: "400", display: "swap" });
 
 export default function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -36,7 +39,7 @@ export default function Header() {
             height={150}
             priority
           />
-          <span className="text-4xl font-bold text-[#7e8b43]">
+          <span className={`${archivoBlack.className} text-3xl font-bold text-[#7e8b43]`}>
             Learn English In A Versatile Way
           </span>
         </div>
@@ -147,14 +150,14 @@ export default function Header() {
             height={50}
             priority
           />
-          HOME
+          <span className={archivoBlack.className}>HOME</span>
         </Link>
         <div className="relative">
           <button
             onClick={toggleMindmapMenu}
             className="text-white font-bold text-2xl tracking-wide"
           >
-            MINDMAP
+            <span className={archivoBlack.className}>MINDMAP</span>
           </button>
           {showMindmapMenu && (
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white shadow-lg rounded-md py-2 px-4 flex flex-col min-w-[220px] z-10">
@@ -167,17 +170,20 @@ export default function Header() {
             </div>
           )}
         </div>
-        <Link href="/ai-tutor" className="text-white font-bold text-2xl tracking-wide">
-          AI TUTOR
+        <Link href="/word-list" className="text-white font-bold text-2xl tracking-wide">
+          <span className={archivoBlack.className}>WORD LIST</span>
         </Link>
+
         <Link href="/practice" className="text-white font-bold text-2xl tracking-wide">
-          PRACTICE
+          <span className={archivoBlack.className}>PRACTICE</span>
         </Link>
+
+        <Link href="/ai-tutor" className="text-white font-bold text-2xl tracking-wide">
+          <span className={archivoBlack.className}>AI TUTOR</span>
+        </Link>
+        
         <Link href="/community" className="text-white font-bold text-2xl tracking-wide">
-          COMMUNITY
-        </Link>
-                <Link href="/community" className="text-white font-bold text-2xl tracking-wide">
-          ABOUT ME
+          <span className={archivoBlack.className}>COMMUNITY</span>
         </Link>
       </nav>
     </header>

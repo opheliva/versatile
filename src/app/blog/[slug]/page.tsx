@@ -1,67 +1,66 @@
 "use client";
 import { useState, useEffect } from "react";
 import { usePathname } from 'next/navigation';
+import Link from "next/link";
 
-// Định nghĩa kiểu dữ liệu cho một bài viết để TypeScript nhận diện
 interface Post {
   slug: string;
   title: string;
+  category: string;
   image: string;
   date: string;
   content: string;
 }
 
-// Mock data cho tất cả các bài viết blog
 const allPosts: Post[] = [
   {
-    slug: "tai-sao-ielts-band-7",
-    title: "Tại sao bạn mãi CHỨNG ở IELTS Band 7 dù LUYỆN ĐỀ CẢ NĂM TRỜI?",
-    image: "/blog-post-1.jpg",
-    date: "31/7/2025",
+    slug: "from-pharmacy-to-computer-science",
+    title: "From Pharmacy to Computer Science: Why I am building Versatile",
+    category: "MY JOURNEY",
+    image: "/blog-pharmacy.jpg", 
+    date: "Dec 31, 2025",
     content: `
-      <p className="mb-4">Bạn đã luyện đề cả năm trời, làm hàng trăm bài Listening, Reading, viết cả chục bài Essay nhưng điểm IELTS vẫn dậm chân tại chỗ ở Band 7? Bạn cảm thấy nản lòng và không biết mình sai ở đâu? Bài viết này sẽ giúp bạn hiểu rõ nguyên nhân và tìm ra lối thoát.</p>
+      <p class="mb-6 text-xl italic border-l-4 border-[#7e8b43] pl-4">"Can a medicine researcher build software systems that revolutionize education?"</p>
       
-      <h3 className="text-2xl font-bold text-[#505252] mt-8 mb-4">1. Chỉ luyện đề, không học lại từ gốc</h3>
-      <p className="mb-4">Nhiều người học chỉ tập trung vào việc làm thật nhiều đề thi thử mà quên mất việc học lại kiến thức nền tảng. Luyện đề chỉ là bước cuối cùng để làm quen với cấu trúc đề thi và rèn luyện tốc độ. Nếu bạn không nắm vững ngữ pháp, từ vựng, và các chiến thuật làm bài cơ bản, bạn sẽ khó mà tiến bộ được.</p>
+      <p class="mb-6">I started my journey at Ton Duc Thang University, deeply immersed in Pharmaceutical sciences. However, the more I studied, the more I realized the transformative power of technology in bridging the educational gap.</p>
       
-      <h3 className="text-2xl font-bold text-[#505252] mt-8 mb-4">2. Không có phản hồi chuyên sâu</h3>
-      <p className="mb-4">Khi tự học, bạn có thể tự chấm điểm Listening và Reading. Tuy nhiên, với Writing và Speaking, việc tự đánh giá là rất khó khăn. Bạn cần có một người có trình độ chuyên môn cao để nhận xét và chỉ ra những lỗi sai cụ thể của mình. Một gia sư AI thông minh có thể giúp bạn làm điều này 24/7.</p>
+      <h3 class="text-2xl font-black text-[#505252] mt-10 mb-4 uppercase tracking-tighter">The Pivotal Shift</h3>
+      <p class="mb-6">While researching piperlongumine derivatives for cancer treatment, I spent my late nights mastering CS50. I realized that while a new drug might take a decade to reach a patient, a single line of code could empower thousands of students instantly.</p>
       
-      <h3 className="text-2xl font-bold text-[#505252] mt-8 mb-4">3. Thiếu sự đa dạng trong cách học</h3>
-      <p className="mb-4">Học tiếng Anh không chỉ là làm bài tập. Hãy đa dạng hóa các hoạt động học của mình bằng cách xem phim, nghe nhạc, đọc sách, và tham gia vào các cộng đồng học tiếng Anh. Việc này không chỉ giúp bạn thư giãn mà còn giúp bạn tiếp xúc với ngôn ngữ một cách tự nhiên hơn.</p>
+      <h3 class="text-2xl font-black text-[#505252] mt-10 mb-4 uppercase tracking-tighter">My Mission at Stanford</h3>
+      <p class="mb-6">This realization led me to apply for the Knight-Hennessy Scholars program. I aim to combine the rigorous logical thinking of Pharmacy with the scalability of Computer Science to build Versatile—a platform where financial limits never limit one's future.</p>
     `
   },
   {
-    slug: "bi-quyet-giao-tiep-tu-tin",
-    title: "Bí quyết để giao tiếp tiếng Anh tự tin như người bản xứ",
-    image: "/blog-post-2.jpg",
-    date: "25/7/2025",
+    slug: "teaching-300-students",
+    title: "What 300+ Students Across SE Asia Taught Me About Learning",
+    category: "EDUCATION",
+    image: "/blog-teaching.jpg",
+    date: "Dec 25, 2025",
     content: `
-      <p className="mb-4">Nói tiếng Anh trôi chảy và tự tin là mục tiêu của rất nhiều người. Nhưng làm thế nào để đạt được điều đó? Sau đây là những bí quyết bạn không nên bỏ qua.</p>
+      <p class="mb-6">From Kyna English classrooms to 1-on-1 sessions for students in Malaysia, Indonesia, and Taiwan, I’ve learned one fundamental truth: traditional learning methods are failing us by being too passive.</p>
       
-      <h3 className="2xl font-bold text-[#505252] mt-8 mb-4">1. Luyện tập hàng ngày</h3>
-      <p className="mb-4">Không có con đường tắt nào đến sự thành thạo. Hãy dành 15-30 phút mỗi ngày để luyện nói. Bạn có thể tự nói chuyện với chính mình, ghi âm lại giọng nói của mình, hoặc tìm một người bạn để luyện tập cùng.</p>
+      <h3 class="text-2xl font-black text-[#505252] mt-10 mb-4 uppercase tracking-tighter">Visual Memory & Interactive Mindmaps</h3>
+      <p class="mb-6">Most students struggle because they try to memorize long, isolated lists of vocabulary. In the Versatile project, I implement Interactive Mindmaps to stimulate visual association—a method I’ve successfully used to help hundreds of my students master English naturally.</p>
       
-      <h3 className="2xl font-bold text-[#505252] mt-8 mb-4">2. Tập trung vào ngữ điệu và trọng âm</h3>
-      <p className="mb-4">Ngữ điệu và trọng âm đóng vai trò quan trọng trong việc truyền đạt ý nghĩa. Thay vì chỉ tập trung vào từ vựng, hãy lắng nghe cách người bản xứ nói và cố gắng bắt chước ngữ điệu của họ.</p>
+      <h3 class="text-2xl font-black text-[#505252] mt-10 mb-4 uppercase tracking-tighter">Closing the Inequality Gap</h3>
+      <p class="mb-6">Quality education should be a right, not a privilege. Having worked multiple part-time jobs to support my own studies, I’ve seen the hunger for knowledge in underserved communities. That is my motivation to keep Versatile completely free for everyone.</p>
     `
   },
   {
-    slug: "5-ung-dung-hoc-tu-vung",
-    title: "5 ứng dụng học từ vựng hiệu quả nhất mà bạn nên dùng",
-    image: "/blog-post-3.jpg",
-    date: "18/7/2025",
+    slug: "self-taught-developer-tips",
+    title: "Self-Taught React & Next.js: Lessons from a Pharmacy Student",
+    category: "CODING",
+    image: "/blog-cs50.jpg",
+    date: "Dec 15, 2025",
     content: `
-      <p className="mb-4">Từ vựng là nền tảng của mọi ngôn ngữ. Dưới đây là 5 ứng dụng tuyệt vời sẽ giúp bạn mở rộng vốn từ vựng của mình một cách nhanh chóng.</p>
+      <p class="mb-6">How did I manage to finish my pharmacology thesis while simultaneously completing the CS50 Web certification? The answer isn't brilliant talent—it's radical discipline.</p>
       
-      <h3 className="text-2xl font-bold text-[#505252] mt-8 mb-4">1. Duolingo</h3>
-      <p className="mb-4">Với phương pháp học qua trò chơi, Duolingo giúp bạn học từ vựng một cách nhẹ nhàng và hiệu quả.</p>
+      <h3 class="text-2xl font-black text-[#505252] mt-10 mb-4 uppercase tracking-tighter">Project-Based Learning</h3>
+      <p class="mb-6">Instead of just watching tutorials, I started building Versatile immediately. Every bug was a lesson; every crash was an opportunity to dive deeper into TypeScript and Framer Motion. This "learning by doing" approach is the fastest way to master any tech stack.</p>
       
-      <h3 className="text-2xl font-bold text-[#505252] mt-8 mb-4">2. Anki</h3>
-      <p className="mb-4">Anki sử dụng hệ thống lặp lại ngắt quãng để đảm bảo bạn ghi nhớ từ vựng lâu dài.</p>
-      
-      <h3 className="text-2xl font-bold text-[#505252] mt-8 mb-4">3. Quizlet</h3>
-      <p className="mb-4">Bạn có thể tạo flashcard riêng của mình hoặc sử dụng hàng triệu bộ flashcard có sẵn từ cộng đồng.</p>
+      <h3 class="text-2xl font-black text-[#505252] mt-10 mb-4 uppercase tracking-tighter">Advice for Career Pivoters</h3>
+      <p class="mb-6">Don't be afraid to start from zero. The skills from your previous field—like the meticulousness required in a Pharmacy lab—will be your secret weapon in writing clean, logical, and efficient code.</p>
     `
   }
 ];
@@ -71,40 +70,73 @@ export default function BlogPost() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const pathSegments = pathname.split('/');
-    const slug = pathSegments[pathSegments.length - 1];
-    
+    const slug = pathname.split('/').pop();
     const foundPost = allPosts.find((p) => p.slug === slug);
-    setPost(foundPost || null); // Dùng null nếu không tìm thấy
+    setPost(foundPost || null);
   }, [pathname]);
 
   if (!post) {
     return (
-      <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-8">
-        <h1 className="text-3xl font-bold text-gray-700">Không tìm thấy bài viết này</h1>
-        <a href="/blog" className="mt-4 text-blue-500 hover:underline">Quay lại Blog</a>
+      <div className="bg-[#fdfff2] min-h-screen flex items-center justify-center">
+        <p className="text-[#7e8b43] font-black">Loading post...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#fffdfc] min-h-screen py-20 px-8">
-      <div className="max-w-4xl mx-auto">
-        <a href="/blog" className="inline-flex items-center text-[#ff6957] font-semibold mb-8 hover:text-[#ff4e3e]">
-          <span className="mr-2">←</span> Quay lại Blog
-        </a>
-        
-        <h1 className="text-5xl md:text-6xl font-extrabold text-[#505252] mb-4 leading-tight">
-          {post.title}
-        </h1>
-        <div className="text-gray-500 mb-8">
-          <span>{post.date}</span>
+    <main className="bg-[#fdfff2] min-h-screen py-20 px-6">
+      <article className="max-w-3xl mx-auto">
+        {/* Back Button */}
+        <Link href="/blog" className="inline-flex items-center text-[#7e8b43] font-black uppercase tracking-widest text-[10px] mb-12 hover:gap-3 transition-all">
+          <span className="text-lg">←</span> Back to Blog
+        </Link>
+
+        {/* Header */}
+        <div className="mb-12">
+          <div className="flex items-center gap-4 mb-6">
+             <span className="bg-[#7e8b43] text-white px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase">
+                {post.category}
+             </span>
+             <span className="text-gray-400 text-xs font-bold uppercase tracking-widest">{post.date}</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-[#505252] leading-tight mb-8">
+            {post.title}
+          </h1>
         </div>
-        
-        <img src={post.image} alt={post.title} className="w-full h-auto object-cover rounded-2xl shadow-lg mb-8" />
-        
-        <div className="prose max-w-none text-lg text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content }} />
-      </div>
-    </div>
+
+        {/* Image */}
+        <div className="rounded-[40px] overflow-hidden shadow-2xl mb-16 border-8 border-white">
+          <img src={post.image} alt={post.title} className="w-full h-auto" />
+        </div>
+
+        {/* Content Area */}
+        <div 
+          className="text-[#505252] text-lg leading-relaxed blog-content"
+          dangerouslySetInnerHTML={{ __html: post.content }} 
+        />
+
+        {/* Decorative Footer */}
+        <div className="mt-20 pt-10 border-t border-dashed border-[#7e8b43]/30 flex flex-col items-center">
+           <p className="text-gray-400 text-sm italic mb-8 italic">"Passion is the only resource you truly need."</p>
+           <Link href="/" className="bg-[#ff98a2] text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-xs shadow-xl hover:scale-105 transition-all">
+              Learn more about my journey
+           </Link>
+        </div>
+      </article>
+
+      {/* Tailwind Style Fix cho dangerouslySetInnerHTML */}
+      <style jsx global>{`
+        .blog-content p { margin-bottom: 1.5rem; }
+        .blog-content h3 { 
+          font-weight: 900; 
+          color: #505252; 
+          font-size: 1.5rem; 
+          margin-top: 2.5rem; 
+          margin-bottom: 1rem;
+          text-transform: uppercase;
+          letter-spacing: -0.025em;
+        }
+      `}</style>
+    </main>
   );
 }

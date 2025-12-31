@@ -2,16 +2,14 @@
 
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import Link from "next/link";
 
-// Định nghĩa kiểu dữ liệu cho mỗi node trong sơ đồ
 interface NodeData {
   name: string;
   children?: NodeData[] | null;
   _children?: NodeData[] | null;
 }
 
-// Mở rộng kiểu dữ liệu D3 HierarchyNode để bao gồm các thuộc tính cho hoạt ảnh
-// Thêm thuộc tính id, x0 và y0 và _children
 interface HierarchyPointNodeWithId extends d3.HierarchyPointNode<NodeData> {
   id?: string;
   x0?: number;
@@ -22,77 +20,53 @@ interface HierarchyPointNodeWithId extends d3.HierarchyPointNode<NodeData> {
 type HLink = d3.HierarchyPointLink<NodeData>;
 
 const data: NodeData = {
-  name: "Sentence",
+  name: "WORD CLASSES",
   children: [
     {
-      name: "Noun",
+      name: "NOUN (N)",
       children: [
-        {
-          name: "Types of Nouns",
-          children: [
-            { name: "Proper Noun" },
-            { name: "Common Noun" },
-            { name: "Collective Noun" },
-            { name: "Abstract Noun" },
-          ],
-        },
-        {
-          name: "Functions of Nouns",
-          children: [
-            { name: "Subject" },
-            { name: "Object" },
-            { name: "Predicate Nominative" },
-          ],
-        },
+        { name: "Proper: London, Vy" },
+        { name: "Common: City, App" },
+        { name: "Abstract: Love, Goal" },
+        { name: "Collective: Team, Staff" },
       ],
     },
     {
-      name: "Adjective",
+      name: "VERB (V)",
       children: [
-        {
-          name: "Types of Adjectives",
-          children: [
-            { name: "Descriptive" },
-            { name: "Quantitative" },
-            { name: "Demonstrative" },
-          ],
-        },
+        { name: "Action: Run, Code" },
+        { name: "Stative: Know, Believe" },
+        { name: "Auxiliary: Be, Do, Have" },
+        { name: "Modal: Can, Must, Will" },
       ],
     },
     {
-      name: "Verb",
+      name: "ADJECTIVE (ADJ)",
       children: [
-        {
-          name: "Types of Verbs",
-          children: [
-            { name: "Action Verb" },
-            { name: "Linking Verb" },
-            { name: "Helping Verb" },
-          ],
-        },
-        {
-          name: "Tenses",
-          children: [
-            { name: "Present Tense" },
-            { name: "Past Tense" },
-            { name: "Future Tense" },
-          ],
-        },
+        { name: "Descriptive: Big, Blue" },
+        { name: "Quantitative: Many, Few" },
+        { name: "Demonstrative: This, That" },
       ],
     },
     {
-      name: "Adverb",
+      name: "ADVERB (ADV)",
       children: [
-        { name: "Adverb of Time" },
-        { name: "Adverb of Place" },
-        { name: "Adverb of Manner" },
+        { name: "Manner: Quickly, Well" },
+        { name: "Time: Now, Today" },
+        { name: "Place: Here, There" },
       ],
     },
-    { name: "Pronoun" },
-    { name: "Determiner" },
-    { name: "Conjunction" },
-    { name: "Preposition" },
-    { name: "Interjection" },
+    {
+      name: "PRONOUN (PRO)",
+      children: [
+        { name: "Personal: I, You, He" },
+        { name: "Possessive: Mine, Yours" },
+        { name: "Relative: Who, Which" },
+      ],
+    },
+    { name: "PREPOSITION (PREP)" },
+    { name: "CONJUNCTION (CONJ)" },
+    { name: "INTERJECTION (INT)" },
   ],
 };
 
@@ -137,26 +111,13 @@ const D3Mindmap: React.FC = () => {
     root.x0 = 0;
     root.y0 = 0;
 
-    // Định nghĩa các màu sắc cho node
-    const colors = [
-      "#e74c3c", "#f39c12", "#f1c40f", "#2ecc71", "#3498db",
-      "#9b59b6", "#34495e", "#1abc9c", "#e67e22",
-    ];
-
-    // Hàm lấy màu dựa trên độ sâu của node
+    // color
     const getColor = (d: HierarchyPointNodeWithId) => {
-      if (d.depth === 0) return "#34495e";
-      const firstLevelAncestor = d
-        .ancestors()
-        .find((ancestor) => ancestor.depth === 1);
-      if (firstLevelAncestor) {
-        const index = root.children?.indexOf(firstLevelAncestor as any) ?? 0;
-        return colors[index % colors.length];
-      }
-      return "#555";
+      if (d.depth === 0) return "#505252";
+      if (d.depth === 1) return "#7e8b43"; // Màu rêu
+      return "#ff98a2"; // Màu hồng
     };
 
-    // Hàm xử lý khi click vào node (thu gọn/mở rộng)
     const click = (_event: MouseEvent, d: HierarchyPointNodeWithId) => {
       if (d.children) {
         d._children = d.children;
@@ -168,23 +129,18 @@ const D3Mindmap: React.FC = () => {
       update(d);
     };
 
-    // Hàm cập nhật sơ đồ chính
     function update(source: HierarchyPointNodeWithId) {
-      // Tạo layout cây và lấy các node, link
       const treeData = d3.tree<NodeData>().size([height, width])(root);
       const nodes = treeData.descendants().reverse() as HierarchyPointNodeWithId[];
-      const links = root.links(); // Lấy link từ cấu trúc cây
+      const links = root.links();
 
-      // Cập nhật vị trí y của các node
       nodes.forEach((d) => {
-        d.y = d.depth * 250;
+        d.y = d.depth * 280; // Khoảng cách ngang rộng cho chữ bự
       });
 
-      // Cập nhật các node
       const node = svg.selectAll<SVGGElement, HierarchyPointNodeWithId>("g.node")
         .data(nodes, (d) => d.id as string);
 
-      // Thêm các node mới
       const nodeEnter = node
         .enter()
         .append("g")
@@ -192,26 +148,30 @@ const D3Mindmap: React.FC = () => {
         .attr("transform", `translate(${source.y0},${source.x0})`)
         .on("click", click);
 
+      // Rect bự hơn theo ý bạn
       nodeEnter
         .append("rect")
-        .attr("class", "node-rect")
-        .attr("width", 160)
-        .attr("height", 50)
-        .attr("rx", 10)
-        .attr("ry", 10)
-        .attr("x", -80)
-        .attr("y", -25)
+        .attr("class", "node-rect shadow-lg")
+        .attr("width", 220)
+        .attr("height", 60)
+        .attr("rx", 30)
+        .attr("ry", 30)
+        .attr("x", -110)
+        .attr("y", -30)
         .style("fill", "#fff")
-        .style("stroke-width", "2px")
+        .style("stroke-width", "4px")
         .style("stroke", getColor);
 
+      // Chữ bự 14px
       nodeEnter
         .append("text")
         .attr("text-anchor", "middle")
         .attr("dy", "0.35em")
+        .attr("class", "font-black uppercase tracking-tight")
+        .style("font-size", "14px")
+        .style("pointer-events", "none")
         .text((d) => d.data.name);
 
-      // Gộp các node mới và cũ
       const nodeUpdate = nodeEnter.merge(node);
 
       nodeUpdate
@@ -221,40 +181,36 @@ const D3Mindmap: React.FC = () => {
 
       nodeUpdate
         .select(".node-rect")
-        .style("fill", (d) => (d.depth === 0 ? "#2c3e50" : "#f0f0f0"))
+        .style("fill", (d) => (d.depth === 0 ? "#505252" : "#fff"))
         .style("stroke", getColor);
 
       nodeUpdate
         .select("text")
-        .style("fill", (d) => (d.depth === 0 ? "white" : "#333"));
+        .style("fill", (d) => (d.depth === 0 ? "white" : "#505252"));
 
-      // Chuyển đổi và xóa các node không còn tồn tại
       node.exit()
         .transition()
         .duration(duration)
         .attr("transform", (d) => `translate(${source.y},${source.x})`)
         .remove();
 
-      // Khai báo link generator một lần
       const linkGenerator = d3.linkHorizontal<HLink, HierarchyPointNodeWithId>()
           .x(node => node.y)
           .y(node => node.x);
 
-      // Cập nhật các đường liên kết
       const link = svg.selectAll<SVGPathElement, HLink>("path.link")
         .data(links, (d) => (d.target as HierarchyPointNodeWithId).id as string);
 
-      // Thêm các link mới
       link
         .enter()
         .insert("path", "g")
         .attr("class", "link")
         .attr("stroke", (d) => getColor(d.target as HierarchyPointNodeWithId))
         .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "5,5")
         .attr("fill", "none")
         .attr("d", (d) => {
           const typedD = d as HLink;
-          // Tạo link tạm thời từ node cha để tạo hiệu ứng mở rộng
           const tmpLink: HLink = { source: typedD.source, target: typedD.source };
           return linkGenerator(tmpLink) ?? null;
         })
@@ -263,17 +219,14 @@ const D3Mindmap: React.FC = () => {
         .duration(duration)
         .attr("d", (d) => linkGenerator(d as HLink) ?? null);
 
-      // Chuyển đổi và xóa các link không còn tồn tại
       link.exit().transition().duration(duration)
         .attr("d", (d) => {
             const typedD = d as HLink;
-            // Tạo link tạm thời từ node cha để tạo hiệu ứng co lại
             const tmpLink: HLink = { source: typedD.source, target: typedD.source };
             return linkGenerator(tmpLink) ?? null;
         })
         .remove();
 
-      // Lưu trữ vị trí hiện tại để chuẩn bị cho lần cập nhật tiếp theo
       root.eachBefore((d) => {
         const node = d as HierarchyPointNodeWithId;
         node.x0 = node.x;
@@ -281,36 +234,61 @@ const D3Mindmap: React.FC = () => {
       });
     }
 
-    // Bắt đầu vẽ sơ đồ từ gốc
     update(root);
   }, []);
 
   return (
-    <main className="container mx-auto px-4 py-8 bg-[#F5F5DC] min-h-screen">
-      <h1 className="text-center text-4xl font-bold text-gray-800 mb-8 font-inter">
-        Grammar Mindmap
-      </h1>
-      <div className="relative w-full max-h-[800px] overflow-auto bg-white p-4 rounded-xl shadow-lg border-2 border-gray-200">
-        <style jsx>{`
-          .node text {
-            font-family: sans-serif;
-            fill: #333;
-            font-weight: 500;
-          }
-          .node-rect {
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out;
-          }
-          .node-rect:hover {
-            transform: scale(1.05);
-          }
-          .link {
-            fill: none;
-            stroke-width: 2px;
-          }
-        `}</style>
-        <div ref={svgRef}></div>
+    <main className="min-h-screen bg-[#fdfff2] py-20 px-6 flex flex-col items-center">
+      <div className="max-w-7xl w-full text-center">
+        <Link href="/" className="inline-flex items-center text-[#7e8b43] font-black uppercase tracking-widest text-[10px] mb-8 hover:gap-3 transition-all">
+          ← Back to Dashboard
+        </Link>
+        <h1 className="text-5xl md:text-6xl font-black text-[#505252] mb-4 uppercase tracking-tighter">
+          Grammar Mindmap
+        </h1>
+        <p className="text-[#7e8b43] font-bold italic mb-12">Visualizing English Word Classes</p>
+        
+        {/* SỬ DỤNG ĐÚNG CẤU TRÚC CONTAINER CỦA BẠN */}
+        <div className="relative w-full max-h-[700px] overflow-auto bg-white p-4 rounded-[50px] shadow-2xl border-4 border-dashed border-[#d4e7b8] custom-scrollbar">
+          <div ref={svgRef} className="inline-block"></div>
+        </div>
+
+        {/* NỘI DUNG PHÍA DƯỚI - KHÔNG CÒN BỊ MẤT */}
+        <div className="mt-12 flex flex-col items-center gap-6 pb-20">
+          <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]">
+             Tip: Scroll to explore • Click nodes to expand
+          </p>
+          <div className="flex gap-8">
+             <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-[#505252]"></div>
+                <span className="text-[11px] font-bold text-gray-600 uppercase">Root</span>
+             </div>
+             <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-[#7e8b43]"></div>
+                <span className="text-[11px] font-bold text-gray-600 uppercase">Class</span>
+             </div>
+             <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-[#ff98a2]"></div>
+                <span className="text-[11px] font-bold text-gray-600 uppercase">Examples</span>
+             </div>
+          </div>
+        </div>
       </div>
+
+      <style jsx global>{`
+        .node-rect { transition: all 0.3s ease; }
+        .node:hover .node-rect { transform: scale(1.05); filter: brightness(0.95); }
+        .link { stroke-opacity: 0.5; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 12px; height: 12px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f9fbf2; border-radius: 20px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { 
+          background: #d4e7b8; 
+          border-radius: 20px; 
+          border: 3px solid #fff; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #7e8b43; }
+      `}</style>
     </main>
   );
 };

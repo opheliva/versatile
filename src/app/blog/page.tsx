@@ -1,58 +1,102 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 
-export default function Blog() {
+export default function BlogPage() {
   const [posts] = useState([
     {
-      slug: "tai-sao-ielts-band-7",
-      title: "Tại sao bạn mãi CHỨNG ở IELTS Band 7 dù LUYỆN ĐỀ CẢ NĂM TRỜI?",
-      description: "Khám phá 3 điểm chính mà những người Band 8 IELTS làm khác biệt so với những người mắc kẹt ở Band 7.",
-      image: "/blog-post-1.jpg",
-      date: "31/7/2025"
+      slug: "from-pharmacy-to-computer-science",
+      title: "From Pharmacy to Computer Science: Why I am building Versatile",
+      description: "My journey of transitioning from a medical background to software development, driven by a passion to reduce educational inequality.",
+      image: "/blog-pharmacy.jpg",
+      date: "DEC 31, 2025",
+      tag: "MY JOURNEY"
     },
     {
-      slug: "bi-quyet-giao-tiep-tu-tin",
-      title: "Bí quyết để giao tiếp tiếng Anh tự tin như người bản xứ",
-      description: "Giao tiếp tiếng Anh không chỉ là về ngữ pháp và từ vựng. Cùng khám phá các bí quyết để nói trôi chảy và tự nhiên hơn.",
-      image: "/blog-post-2.jpg",
-      date: "25/7/2025"
+      slug: "teaching-300-students",
+      title: "What 300+ Students Across SE Asia Taught Me About English",
+      description: "Insights from teaching English across Southeast Asia and why interactive mindmaps are the future of learning.",
+      image: "/blog-teaching.jpg",
+      date: "DEC 25, 2025",
+      tag: "EDUCATION"
     },
     {
-      slug: "5-ung-dung-hoc-tu-vung",
-      title: "5 ứng dụng học từ vựng hiệu quả nhất mà bạn nên dùng",
-      description: "Đừng lãng phí thời gian, hãy tận dụng công nghệ để học từ vựng tiếng Anh một cách hiệu quả và thú vị hơn.",
-      image: "/blog-post-3.jpg",
-      date: "18/7/2025"
+      slug: "self-taught-developer-tips",
+      title: "Self-Taught React & Next.js: Lessons from a Pharmacy Student",
+      description: "How I managed to finish my pharmacology thesis while mastering web development through project-based learning.",
+      image: "/blog-cs50.jpg",
+      date: "DEC 15, 2025",
+      tag: "CODING"
     }
   ]);
 
   return (
-    <div className="bg-gray-100 min-h-screen py-20 px-8">
-      <div className="max-w-4xl mx-auto text-center">
-        <h1 className="text-5xl font-extrabold text-[#505252] mb-4">Blog Versatile</h1>
-        <p className="text-xl text-gray-500 mb-12">Nơi chia sẻ kiến thức và kinh nghiệm học tiếng Anh</p>
+    <main className="bg-[#fdfff2] min-h-screen py-24 px-6">
+      <div className="max-w-[1200px] mx-auto text-center">
+        {/* Nút quay lại trang chủ nhanh */}
+        <Link href="/" className="inline-flex items-center text-[#7e8b43] font-black uppercase tracking-widest text-[10px] mb-8 hover:gap-2 transition-all">
+          <span className="mr-2">←</span> Back to Home
+        </Link>
+
+        <h1 className="text-5xl md:text-6xl font-black text-[#505252] mb-4 uppercase tracking-tighter">
+          The Versatile Blog
+        </h1>
+        <p className="text-gray-500 font-medium mb-20 italic text-lg max-w-2xl mx-auto">
+          Insights on career pivoting, self-taught coding, and the mission to democratize quality education.
+        </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Grid Container - 3 cột giống hệt phần trang chủ */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
           {posts.map((post, index) => (
-            <div key={index} className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-transform hover:scale-105">
-              <a href={`/blog/${post.slug}`}>
-                <img src={post.image} alt={post.title} className="w-full h-48 object-cover"/>
-                <div className="p-6 text-left">
-                  <h2 className="text-2xl font-bold text-[#505252] mt-2 mb-2">
-                    {post.title}
-                  </h2>
-                  <p className="text-md text-gray-600 mb-4">
-                    {post.description}
-                  </p>
-                  <div className="text-sm text-gray-400">
-                    <span>{post.date}</span>
-                  </div>
+            <div 
+              key={index} 
+              className="bg-white rounded-[40px] shadow-lg overflow-hidden group cursor-pointer border border-gray-100 flex flex-col transition-all hover:-translate-y-2 hover:shadow-2xl"
+            >
+              {/* Image Wrapper */}
+              <div className="h-64 overflow-hidden relative">
+                <div className="absolute top-5 left-5 z-10 bg-[#7e8b43] text-white px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase">
+                  {post.tag}
                 </div>
-              </a>
+                <img 
+                  src={post.image} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                  alt={post.title} 
+                />
+              </div>
+              
+              {/* Content */}
+              <div className="p-10 flex flex-col flex-grow">
+                <p className="text-[#ff98a2] text-[10px] font-black uppercase tracking-widest mb-4">
+                  {post.date}
+                </p>
+                <h3 className="text-2xl font-black text-[#505252] mb-4 leading-tight group-hover:text-[#7e8b43] transition-colors line-clamp-2">
+                  {post.title}
+                </h3>
+                <p className="text-gray-500 text-sm leading-relaxed mb-8 line-clamp-3 opacity-80">
+                  {post.description}
+                </p>
+                
+                {/* Link ở dưới cùng */}
+                <div className="mt-auto">
+                  <Link 
+                    href={`/blog/${post.slug}`} 
+                    className="inline-flex items-center gap-2 text-[#7e8b43] font-black uppercase tracking-widest text-[10px] group/link"
+                  >
+                    Read Story <span className="group-hover/link:translate-x-1 transition-transform">→</span>
+                  </Link>
+                </div>
+              </div>
             </div>
           ))}
         </div>
+
+        {/* Footer của trang Blog */}
+        <div className="mt-32 pt-12 border-t border-dashed border-[#7e8b43]/20">
+            <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                © 2025 Versatile • Built by Vy Phuong Trieu
+            </p>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
